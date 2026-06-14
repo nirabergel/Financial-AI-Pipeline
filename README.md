@@ -23,7 +23,7 @@ This service handles DOCX/PDF parsing and adds business logic (department routin
 
 ### 2. The n8n Workflow
 1. Open your n8n instance (`http://localhost:5678`).
-2. Go to **Workflows** -> **Import from File** and upload the provided `Workflow.json`.
+2. Go to **Workflows** -> **Import from File** and upload the provided `Financial_AI_Pipeline.json`.
 3. **Credentials Setup**:
    * Open the Gemini node (`HTTPS Request: Gemini AI Analysis`) and set your `x-goog-api-key` in the Header Auth credential.
    * Authenticate the Google Sheets and Gmail nodes using OAuth2.
