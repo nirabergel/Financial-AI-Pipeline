@@ -1,0 +1,802 @@
+{
+  "name": "n8n_Project",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerOn": "folder",
+        "path": "/home/node/.n8n-files",
+        "events": [
+          "add"
+        ],
+        "options": {
+          "usePolling": true
+        }
+      },
+      "type": "n8n-nodes-base.localFileTrigger",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        -112
+      ],
+      "id": "890b7c7d-1e45-464d-a17f-f91095a3c283",
+      "name": "Local File Trigger"
+    },
+    {
+      "parameters": {
+        "fileSelector": "={{ $json.path }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        -544,
+        -16
+      ],
+      "id": "3d4b8f46-7a70-4be7-9ae7-76d45cb7b300",
+      "name": "Read/Write Files from Disk"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "=application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{\nJSON.stringify({\n  \"contents\": [\n    {\n      \"parts\": $json.has_images ? [\n        { \"text\": $json.prompt },\n        {\n          \"inlineData\": {\n            \"mimeType\": $json.vision_image.mimeType,\n            \"data\": $json.vision_image.data\n          }\n        }\n      ] : [\n        { \"text\": $json.prompt }\n      ]\n    }\n  ]\n})\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        416,
+        160
+      ],
+      "id": "c2900e88-626a-47a5-a3ce-bd97f052fbbc",
+      "name": "HTTPS Request: Gemini AI Analysis",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "2jMgLoLj8CWC2pYJ",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1KXTKpjQwbFZKp4WXOVgJ6vTOsxDwGIm_e_wSx_Dzaao",
+          "mode": "list",
+          "cachedResultName": "AI Document Pipeline Results",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KXTKpjQwbFZKp4WXOVgJ6vTOsxDwGIm_e_wSx_Dzaao/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1KXTKpjQwbFZKp4WXOVgJ6vTOsxDwGIm_e_wSx_Dzaao/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "document_id": "={{ $json.document_id }}",
+            "routing_tag": "={{ $json.routing_tag }}",
+            "sensitivity": "={{ $json.sensitivity }}",
+            "department": "={{ $json.department }}",
+            "processed_at": "={{ $json.processed_at }}",
+            "summary": "={{ $('Code in JavaScript: Clean Gemini JSON').item.json.summary }}",
+            "confidence_score": "={{ $('Code in JavaScript: Clean Gemini JSON').item.json.confidence_score }}",
+            "sentiment": "={{ $('Code in JavaScript: Clean Gemini JSON').item.json.sentiment }}",
+            "classification": "={{ $('Code in JavaScript: Clean Gemini JSON').item.json.classification }}",
+            "action_items": "={{ $('Code in JavaScript: Clean Gemini JSON').item.json.action_items }}",
+            "filename": "={{ $('Read/Write Files from Disk').item.json.fileName }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "document_id",
+              "displayName": "document_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "filename",
+              "displayName": "filename",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processed_at",
+              "displayName": "processed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "classification",
+              "displayName": "classification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "department",
+              "displayName": "department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment",
+              "displayName": "sentiment",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confidence_score",
+              "displayName": "confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "routing_tag",
+              "displayName": "routing_tag",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sensitivity",
+              "displayName": "sensitivity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "action_items",
+              "displayName": "action_items",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1088,
+        -128
+      ],
+      "id": "fa7921e5-d315-4072-9ff7-dc43c672fb06",
+      "name": "Append row in sheet: Save to Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Ynh6t0F6pNvCRHjD",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "nirabergel@gmail.com",
+        "subject": "=[{{$json.classification}}] New document processed: {{ $('Read/Write Files from Disk').item.json.fileName }}",
+        "message": "=<h2>Document Processed</h2>\n<p><b>File:</b> {{ $('Read/Write Files from Disk').item.json.fileName }}</p>\n<p><b>Classification:</b> {{$json.classification}}</p>\n<p><b>Sentiment:</b> {{$json.sentiment}}</p>\n<p><b>Department:</b> {{$json.department}}</p>\n<p><b>Sensitivity:</b> {{$json.sensitivity}}</p>\n<p><b>Routing tag:</b> {{$json.routing_tag}}</p>\n<h3>Summary</h3>\n<p>{{$json.summary}}</p>\n<h3>Action items</h3>\n<p>{{$json.action_items}}</p>\n<hr>\n<p><i>Sent automatically by n8n + Gemini 3 Document Analyst</i></p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1280,
+        -96
+      ],
+      "id": "701a0b38-4fd8-4673-93c1-0f40df662ad3",
+      "name": "Send a message: Send Gmail Alert",
+      "webhookId": "d2bf8c81-da35-41cd-9d5b-68789e1d71fc",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "o9Z6ONbMXo9PvSH1",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## File Ingestion & Extraction\nCatches new files and routes them by type. PDF and DOCX are sent to the local Python parser for text/image extraction",
+        "height": 720,
+        "width": 772
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -768,
+        -240
+      ],
+      "id": "049d030e-7239-4fde-8814-727f9744d0c5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## AI Analysis (Gemini)\n2s delay to avoid Google rate limits. Sends the prompt to Gemini 3 Flash and cleans up the JSON response",
+        "height": 720,
+        "width": 736,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -240
+      ],
+      "id": "e18e6c03-f724-4a9c-99aa-d14e9e9fb3b4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## Metadata Enrichment\nHits the local FastAPI to add business logic like department routing and sensitivity tags",
+        "height": 720,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        768,
+        -240
+      ],
+      "id": "f2b609ce-ec64-4c48-a564-cb7fe1d840fb",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Cloud Logging & Alerts\nAppends the final record to Google Sheets and sends an email notification via Gmail",
+        "height": 336,
+        "width": 576,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        -240
+      ],
+      "id": "415d7b82-519f-4b4b-8743-244c632fdfe9",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "txt",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "467250ca-3aaa-47cc-a206-c6e0fa9c24df"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "50ff1303-766d-4dd8-9127-bb2d23de34c8",
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "pdf",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "PDF"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6414b995-414f-4351-9ee2-66dc7e6820b4",
+                    "leftValue": "={{ $json.fileExtension }}",
+                    "rightValue": "docx",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Docx"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -384,
+        32
+      ],
+      "id": "b3884ddc-6d79-43f1-a725-76570710ff89",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5001/extract_pdf",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -160,
+        48
+      ],
+      "id": "8e3fc3f2-72aa-480c-8390-56009beb35bc",
+      "name": "HTTP Request: Parse PDF (Local API)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5001/extract_docx",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -160,
+        288
+      ],
+      "id": "ecbca56e-3463-4502-b02c-edbcc3c6ddda",
+      "name": "HTTP Request: Parse DOCX (Local API)"
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "extracted_text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -160,
+        -144
+      ],
+      "id": "84b69f19-182f-4073-927c-f11418b18af1",
+      "name": "Extract from Text File"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        80
+      ],
+      "id": "b39739f0-8ed9-43e7-a3f9-d0b88f9e6532",
+      "name": "Wait: Rate Limit Delay (2s)",
+      "webhookId": "5eb8247f-608a-4ff0-b429-eea8403b6a57"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9d2a0fd4-4b32-41bb-8b0d-653bf65beb83",
+              "name": "prompt",
+              "value": "=You are an expert Financial AI Analyst. Extract insights from the provided financial documents, reports, or invoices. Return ONLY a valid JSON object with the exact following keys:\n- classification (choose one: 'quarterly_report', 'budget_update', 'expense_claim', 'other')\n- sentiment ('positive', 'negative', 'neutral' regarding financial health)\n- confidence_score (float between 0.0 and 1.0)\n- summary (a short executive summary of the financial data)\n- action_items (a list of strings detailing required financial actions or approvals)\n- entities (a JSON object extracting arrays of 'companies', 'amounts', and 'dates')\nHere is the document to analyze: {{ $json.extracted_text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        64,
+        48
+      ],
+      "id": "58e4c208-ea69-4daa-851e-f090f9d93d16",
+      "name": "Edit Fields: Build AI Prompt"
+    },
+    {
+      "parameters": {
+        "jsCode": "let aiText = $input.first().json.candidates[0].content.parts[0].text;\n\naiText = aiText.replace(/```json/g, '').replace(/```/g, '').trim();\n\nreturn JSON.parse(aiText);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        240
+      ],
+      "id": "b1851a47-b634-4061-92a0-859eb6bd2634",
+      "name": "Code in JavaScript: Clean Gemini JSON"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:5001/enrich",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        848,
+        16
+      ],
+      "id": "0b7f513f-d17c-4d37-b763-f77e15f08408",
+      "name": "HTTP Request: Enrich Metadata (FastAPI)"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "197c5896-8bfb-48be-a086-67a4a39f3778",
+              "name": "markdown_content",
+              "value": "=# Document Processing Summary\n**Document ID:** {{ $json.document_id }}\n**Processed At:** {{ $json.processed_at }}\n\n## 1. Classification & Routing\n* **Category:** {{ $json.classification }}\n* **Department:** {{ $json.department }}\n* **Sensitivity:** {{ $json.sensitivity }}\n* **Action Tag:** {{ $json.routing_tag }}\n* **Confidence:** {{ $json.confidence_score }}\n\n## 2. AI Summary\n{{ $json.summary }}\n\n## 3. Extracted Entities\n{{ JSON.stringify($json.entities, null, 2) }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1072,
+        208
+      ],
+      "id": "52d90a4e-7368-4ddb-8476-9b15613a788d",
+      "name": "Edit Fields: Format Markdown Summary"
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1232,
+        256
+      ],
+      "id": "40e37764-d89e-4962-9ee9-feb77ea17444",
+      "name": "Convert to Binary"
+    },
+    {
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/home/node/.n8n-files/output_docs/summary_{{ $('HTTP Request: Enrich Metadata (FastAPI)').item.json.document_id }}.md",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1.1,
+      "position": [
+        1392,
+        288
+      ],
+      "id": "bbb2ead9-97bf-4b24-9a6f-e6f3a0883d06",
+      "name": "Read/Write Files from Disk: Save MD to output_docs"
+    },
+    {
+      "parameters": {
+        "content": "## Local Markdown Export\nMerges the AI summary and metadata into a readable .md file and saves it locally",
+        "height": 368,
+        "width": 576,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        112
+      ],
+      "id": "fa11c399-4c52-49c8-b7fe-3cff28b612bd",
+      "name": "Sticky Note4"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Local File Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTPS Request: Gemini AI Analysis": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript: Clean Gemini JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet: Save to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Send a message: Send Gmail Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract from Text File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request: Parse PDF (Local API)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "HTTP Request: Parse DOCX (Local API)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Parse PDF (Local API)": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields: Build AI Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Parse DOCX (Local API)": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields: Build AI Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from Text File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields: Build AI Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait: Rate Limit Delay (2s)": {
+      "main": [
+        [
+          {
+            "node": "HTTPS Request: Gemini AI Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields: Build AI Prompt": {
+      "main": [
+        [
+          {
+            "node": "Wait: Rate Limit Delay (2s)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript: Clean Gemini JSON": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request: Enrich Metadata (FastAPI)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields: Format Markdown Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request: Enrich Metadata (FastAPI)": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet: Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields: Format Markdown Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields: Format Markdown Summary": {
+      "main": [
+        [
+          {
+            "node": "Convert to Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Binary": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk: Save MD to output_docs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "943f4368-4101-4050-973a-05c32a74ca9a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "b694b9802199554c81071321427530d4cc54115d459275b4c72dcacfe86bc822"
+  },
+  "id": "xuRnj9jCLUf2gv3A",
+  "tags": []
+}
